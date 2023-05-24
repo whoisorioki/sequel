@@ -1,2 +1,0 @@
-SELECT *
-  FROM recent_grads;
