@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# mk_package_files-rpm - Output tsv list of installed Fedora/CentOS files
+#                        on standard output
+
+while read package; do
+  while read package_file; do
+    if [[ -r "$package_file" ]]; then # not all files are present/readable
+      printf "%s\t%s\t%s\n" \
+        "$package" \
+        "$package_file" \
+        "$(stat --printf '%s' "$package_file")"
+    fi
+  done < <( rpm -ql "$package" )
+done < <( dnf list installed | awk 'NF == 3 { print $1 }' )
+

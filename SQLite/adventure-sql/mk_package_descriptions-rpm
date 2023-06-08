@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# mk_package_descriptions-rpm - Output tsv list of installed Fedora/CentOS
+#                               packages on standard output
+
+while read package; do
+  description=$(dnf info "$package" \
+    | awk '$1 == "Summary" { gsub(/Summary      : /, ""); print $0; exit }')
+  printf "%s\t%s\n" \
+    "$package" \
+    "$description"
+done < <( dnf list installed | awk 'NF == 3 { print $1 }' )

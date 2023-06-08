@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# mk_package_descriptions-deb - Output tsv list of installed debian/ubnutu
+#                               packages on standard output
+
+phase1() { # Replace repeated spaces with a tab
+  awk '
+  {
+    gsub(/[ ][ ]+/, "\t")
+    print $0
+  }'
+  return
+}
+
+phase2() { # Output field 2 and 5 separated by a tab
+  awk '
+    BEGIN {
+      FS = "\t"
+    }
+
+    $1 == "ii" {
+      print $2 "\t" $5
+    }'
+  return
+}
+
+dpkg-query -l | phase1 | phase2
+

@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# mk_package_files - make list of files in all packages
+# Reads *.list files in LIST_DIR. Outputs stream of TSV to stdout.
+
+LIST_DIR=/var/lib/dpkg/info
+
+mk_list () {
+
+  local list_file="$1"
+  local lf_length="${#list_file}"
+  local len
+  local package
+  local -a files
+
+  ((len = lf_length - 5))
+  package="${list_file:0:$len}" # strip '.list' extension
+  package="${package##*/}" # strip leading pathname
+  mapfile files < "$list_file" # load list into array
+  for i in "${files[@]}"; do
+    i="${i//[$'\t\r\n']}" # strip trailing newlines
+    if [[ -f "$i" ]] ; then # write tsv file
+      printf "%s\t%s\t%s\n" \
+        "$package" \
+        "$i" \
+        "$(stat --printf '%s' "$i")" # size of file
+    fi
+  done
+  return
+}
+
+for i in "$LIST_DIR"/*.list; do
+  mk_list "$i"
+done
