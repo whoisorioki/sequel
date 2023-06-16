@@ -24,4 +24,5 @@ DROP TABLE Package_Descriptions;
 
 ALTER TABLE temp RENAME TO Package_Descriptions;
 
+
 COMMIT;
